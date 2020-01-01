@@ -9,18 +9,4 @@ const email = emailjs.server.connect({
     tls: false
 })
 
-// email.send({
-// 	from:    "Счёт на оплату | Cupicon <jenya.yacovets@gmail.com>", 
-// 	subject: "Счёт на оплату | Cupicon",
-// 	text:    `<h1>Тело письма</h1>`, 
-// 	to:      "jenya.yacovets@gmail.com",
-//  }, (error, result) => {
-
-//     if (!error) {
-//         console.log(result)
-//     } else {
-//         console.error(error)
-//     }
-//  })
-
  export default email

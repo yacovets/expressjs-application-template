@@ -1,6 +1,7 @@
 import express from 'express'
 import engine from 'ejs-locals'
 import bodyParser from 'body-parser'
+import cookieParser from 'cookie-parser'
 import helmet from 'helmet'
 import http from 'http'
 import compression from 'compression'
@@ -28,7 +29,7 @@ app.use(bodyParser.json({
     limit: '100kb'
 }))
 app.use(limiter)
-// app.use(cookieParser())
+app.use(cookieParser())
 app.use(session)
 app.use(flash())
 app.use(csrf({
