@@ -1,0 +1,355 @@
+<% layout('./layout/main') -%>
+<%-partial('./partials/messages')%>
+
+<img class="landing_art" src="/graphics/landing-background.png" width="100%"> <!-- Логотип -->
+
+<div class="spc_100px"></div> <!-- Отступ от кнопки до логотипа, равный 100px -->
+
+<center><img src="/graphics/logotype_new.png" width="340"></center> <!-- Логотип -->
+
+<center>
+    <div class="main_logo">All-New File Selling Service.</div>
+</center> <!-- Заголовок -->
+
+<div class="spc_20px"></div> <!-- Отступ от заголовка до примечания, равный 20px -->
+
+<center>
+    <div class="caption">Welcome to the place where you can easily publish <p>files and receive rewards.</p>
+    </div>
+</center>
+
+<center>
+    <div class="restriction">􀁟 No more than one file.</div>
+
+    <div class="restriction">􀁟 The maximum file size is 100 Mb.</div>
+
+    <div class="restriction">􀁟 Click left button first.</div>
+</center>
+
+<div class="spc_30px"></div> <!-- Отступ от заголовка до примечания, равный 20px -->
+
+<center>
+    <div class="start-area">
+        <form action="/send-file/?_csrf=<%=csrfToken%>" method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="_csrf" value="<%=csrfToken%>">
+            <input type="file" name="file" id="file" class="inputfile" value="Choose a video please" />
+            <button class="btn_big">Upload</button>
+        </form>
+    </div>
+</center>
+
+<center>
+    <div class="caption_light">Scroll down for more and Contact us.</div>
+</center>
+
+<center>
+    <div class="big_symbol">􀁱</div>
+</center>
+
+<div class="spc_100px"></div> <!-- Отступы -->
+
+<div class="landing-line"></div> <!-- Линия стыка -->
+
+<div class="spc_20px"></div> <!-- Отступы -->
+
+
+
+
+<center>
+    <h1>Three simple steps.</h1>
+</center>
+
+<center>
+    <div class="tables">
+        <table class="landing-table">
+            <!-- Иконка -->
+            <tr>
+                <th>
+                    <div class="icn-row">
+                        <img src="/graphics/1-step-icon.png" width="35">
+                    </div>
+                </th>
+            </tr>
+
+            <!-- Заголовок -->
+            <tr>
+                <th>
+                    <div class="h-row">Upload File</div>
+                </th>
+            </tr>
+
+            <tr>
+                <th>
+                    <div class="icn">•</div>
+                    <div class="el-row">select your file</div>
+                </th>
+            </tr>
+
+            <tr>
+                <th>
+                    <div class="icn">•</div>
+                    <div class="el-row">set a price</div>
+                </th>
+            </tr>
+
+            <tr>
+                <th>
+                    <div class="icn">•</div>
+                    <div class="el-row">enter your BTC wallet</div>
+                </th>
+            </tr>
+
+            <tr>
+                <th>
+                    <div class="step1">STEP 1</div>
+                </th>
+            </tr>
+        </table>
+
+        <table class="landing-table">
+            <!-- Иконка -->
+            <tr>
+                <th>
+                    <div class="icn-row">
+                        <img src="/graphics/2-step-icon.png" width="35">
+                    </div>
+                </th>
+            </tr>
+
+            <!-- Заголовок -->
+            <tr>
+                <th>
+                    <div class="h-row">Share Link</div>
+                </th>
+            </tr>
+
+            <tr>
+                <th>
+                    <div class="icn">•</div>
+                    <div class="el-row">get a short link</div>
+                </th>
+            </tr>
+
+            <tr>
+                <th>
+                    <div class="icn">•</div>
+                    <div class="el-row">share link with your customers</div>
+                </th>
+            </tr>
+
+            <tr>
+                <th>
+                    <div class="step2">STEP 2</div>
+                </th>
+            </tr>
+        </table>
+
+        <table class="landing-table">
+            <!-- Иконка -->
+            <tr>
+                <th>
+                    <div class="icn-row">
+                        <img src="/graphics/3-step-icon.png" width="35">
+                    </div>
+                </th>
+            </tr>
+
+            <!-- Заголовок -->
+            <tr>
+                <th>
+                    <div class="h-row">Get Money</div>
+                </th>
+            </tr>
+
+            <tr>
+                <th>
+                    <div class="icn">•</div>
+                    <div class="el-row">payment is confirmed</div>
+                </th>
+            </tr>
+
+            <tr>
+                <th>
+                    <div class="icn">•</div>
+                    <div class="el-row">money in your BTC wallet</div>
+                </th>
+            </tr>
+
+            <tr>
+                <th>
+                    <div class="step3">STEP 3</div>
+                </th>
+            </tr>
+        </table>
+
+    </div>
+</center>
+
+<h2>This is what they love us for.</h2>
+
+<center>
+    <div class="tables">
+        <table class="landing-table-sm">
+            <!-- Заголовок -->
+            <tr>
+                <th>
+                    <div class="h-row">Fast & Easy</div>
+                </th>
+            </tr>
+
+            <tr>
+                <th>
+                    <div class="t-row">Text.</div>
+                </th>
+            </tr>
+
+            <tr>
+                <th>
+                    <div class="t-row">Text.</div>
+                </th>
+            </tr>
+
+            <tr>
+                <th>
+                    <div class="t-row">Text.</div>
+                </th>
+            </tr>
+        </table>
+
+        <table class="landing-table-sm">
+            <!-- Заголовок -->
+            <tr>
+                <th>
+                    <div class="h-row">Anonimity</div>
+                </th>
+            </tr>
+
+            <tr>
+                <th>
+                    <div class="t-row">We do not care who you are or what you sell.</div>
+                </th>
+            </tr>
+
+            <tr>
+                <th>
+                    <div class="t-row">We do not collect information about you and your customers.</div>
+                </th>
+            </tr>
+
+            <tr>
+                <th>
+                    <div class="t-row">Your BTC wallet will be hidden from your customers.</div>
+                </th>
+            </tr>
+        </table>
+
+        <table class="landing-table-sm">
+            <!-- Заголовок -->
+            <tr>
+                <th>
+                    <div class="h-row">No Rules</div>
+                </th>
+            </tr>
+
+            <tr>
+                <th>
+                    <div class="t-row">No registration.</div>
+                </th>
+            </tr>
+
+            <tr>
+                <th>
+                    <div class="t-row">No evidence.</div>
+                </th>
+            </tr>
+
+            <tr>
+                <th>
+                    <div class="t-row">No rules.</div>
+                </th>
+            </tr>
+
+            <tr>
+                <th>
+                    <div class="t-row">Just three simple steps to sell your file.</div>
+                </th>
+            </tr>
+        </table>
+    </div>
+</center>
+
+<div class="spc_100px"></div> <!-- Отступы -->
+<div class="spc_100px"></div> <!-- Отступы -->
+
+
+<div class="landing-line"></div> <!-- Линия стыка -->
+
+
+
+
+
+<h1>Need Help?</h1>
+
+<center>
+    <div class="caption">Let’s talk about everything!</div>
+</center>
+
+
+<center>
+    <form method="POST" action="/support">
+
+        <input type="hidden" name="_csrf" value="<%=csrfToken%>">
+        <input type="hidden" name="page" value="1">
+
+        <table>
+
+            <tr>
+                <th class="tip-conf">
+                    Full name
+                </th>
+            </tr>
+
+            <tr>
+                <th>
+                    <input class="input-contact" type="text" name="name" placeholder="John Appleseed" required />
+                </th>
+            </tr>
+
+            <tr>
+                <th class="tip-conf">
+                    Email adress
+                </th>
+            </tr>
+
+            <tr>
+                <th>
+                    <input class="input-contact" type="email" name="email" placeholder="example@mail.com" required />
+                </th>
+            </tr>
+
+            <tr>
+                <th class="tip-conf">
+                    Message
+                </th>
+            </tr>
+
+            <tr>
+                <th>
+                    <textarea placeholder="Type something…" name="message" required></textarea>
+                </th>
+            </tr>
+
+            <!-- Область с кнопками -->
+            <tr>
+                <th>
+                    <button type="submit" class="btn_left_250">Submit</button>
+                </th>
+            </tr>
+
+        </table>
+    </form>
+</center>
+
+<div class="spc_100px"></div> <!-- Отступ -->
+
+<div class="spc_100px"></div> <!-- И ещё Отступ -->

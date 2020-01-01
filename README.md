@@ -1,2 +1,2 @@
-# nodeJs-web-application-template
-NodeJs web application template
+# expressjs-application-template
+Express.js application template

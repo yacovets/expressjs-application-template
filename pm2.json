@@ -1,0 +1,28 @@
+{
+    "apps": [
+        {
+            "name": "App",
+            "script": "app.js",
+            "watch": false,
+            "force": false,
+            "max_memory_restart": "700M",
+            "kill_timeout": 4000,
+            "listen_timeout": 4000,
+            "restart_delay": 4000,
+            "max_restarts": 300,
+            "exec_interpreter": "./node_modules/.bin/babel-node",
+            "exec_mode": "fork",
+            "instances": "1",
+            "log_date_format": "DD-MM-YYYY HH:mm:SS",
+            "log": "logs/all.log",
+            "output": "logs/info.log",
+            "error": "logs/error.log",
+            "env": {
+                "NODE_ENV": "production"
+            },
+            "env_development": {
+                "NODE_ENV": "development"
+            }
+        }
+    ]
+}
