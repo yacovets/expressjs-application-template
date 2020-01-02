@@ -72,7 +72,7 @@ export function accessUsers(role) {
 
             req.user = data
 
-            if (!role && role.indexOf(data.role) === -1) {
+            if (role && role.indexOf(data.role) === -1) {
 
                 return next(Error('notFound'))
             }

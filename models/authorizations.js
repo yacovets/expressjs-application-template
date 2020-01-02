@@ -1,5 +1,4 @@
 import Sequelize from 'sequelize'
-import bcrypt from 'bcrypt'
 
 import sequelize from '../include/db'
 
@@ -32,6 +31,22 @@ const model = sequelize.define('authorizations', {
     type: {
         type: Sequelize.INTEGER,
         allowNull: false
+    },
+    ip: {
+        type: Sequelize.STRING,
+        allowNull: true
+    },
+    os: {
+        type: Sequelize.STRING,
+        allowNull: true
+    },
+    platform: {
+        type: Sequelize.STRING,
+        allowNull: true
+    },
+    browser: {
+        type: Sequelize.STRING,
+        allowNull: true
     },
     data: {
         type: Sequelize.JSONB,

@@ -1,6 +1,6 @@
 import email from '../include/email'
 
-const fromSend = process.env.GMAIL_LOGIN
+const fromSend = process.env.EMAIL_FROM_SEND
 
 export async function send(data) {
 

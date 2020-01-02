@@ -12,6 +12,10 @@ export default app => {
     app.get('/login', users.main.login)
     app.post('/login', globalBruteforce.prevent, users.main.loginHandler)
 
+    app.get('/logout', users.main.logout)
+
     app.get('/recovery', users.main.recovery)
     app.post('/recovery', globalBruteforce.prevent, users.main.recoveryHandler)
+
+    app.get('/confirm/:token', users.main.confirm)
 }

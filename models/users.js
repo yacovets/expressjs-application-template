@@ -1,5 +1,6 @@
 import Sequelize from 'sequelize'
 import bcrypt from 'bcrypt'
+import { Op } from 'sequelize'
 
 import sequelize from '../include/db'
 
@@ -7,11 +8,14 @@ import sequelize from '../include/db'
 // 0 - заблокирован
 // 1 - активный
 
+// status_email
+// 1 - верифицирован
+// 2 - не верифицирован
+
 const model = sequelize.define('users', {
     login: {
         type: Sequelize.STRING,
         allowNull: true,
-        unique: true
     },
     email: {
         type: Sequelize.STRING,
@@ -36,6 +40,11 @@ const model = sequelize.define('users', {
         allowNull: false,
         defaultValue: 2
     },
+    ref: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        foreignKey: true
+    },
     data: {
         type: Sequelize.JSONB,
         allowNull: true
@@ -45,7 +54,7 @@ const model = sequelize.define('users', {
     }
 })
 
-model.prototype.validPassword = function(password) {
+model.prototype.validPassword = function (password) {
     return bcrypt.compareSync(password, this.password);
 };
 
@@ -57,7 +66,7 @@ model.beforeSave((user, options) => {
     var saltRounds = 10;
     var salt = bcrypt.genSaltSync(saltRounds);
     var hash = bcrypt.hashSync(password, salt);
-    user.password = hash;
+    return user.password = hash;
 });
 
 model.beforeBulkCreate((users, options) => {
@@ -73,17 +82,24 @@ model.beforeBulkCreate((users, options) => {
     }
 });
 
-model.beforeBulkUpdate((users, options) => {
-    for (const user of users) {
-        const {
-            password
-        } = user;
+// model.beforeBulkUpdate((users, options) => {
 
-        var saltRounds = 10;
-        var salt = bcrypt.genSaltSync(saltRounds);
-        var hash = bcrypt.hashSync(password, salt);
-        user.password = hash;
-    }
-});
+//     console.log('user')
+//     console.log(users)
+//     // console.log('options')
+//     // console.log(options)
+
+//     for (const user of users) {
+
+//         const {
+//             password
+//         } = user;
+
+//         var saltRounds = 10;
+//         var salt = bcrypt.genSaltSync(saltRounds);
+//         var hash = bcrypt.hashSync(password, salt);
+//         user.password = hash;
+//     }
+// });
 
 export default model

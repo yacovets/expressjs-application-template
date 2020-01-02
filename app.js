@@ -7,6 +7,7 @@ import http from 'http'
 import compression from 'compression'
 import csrf from 'csurf'
 import flash from 'connect-flash'
+import useragent from 'express-useragent'
 
 import './include/env'
 // import './crons'
@@ -36,6 +37,7 @@ app.use(csrf({
     cookie: true,
     ignoreMethods: ['GET']
 }))
+app.use(useragent.express())
 
 app.engine('ejs', engine)
 app.set('views', `${__dirname}/views`)
