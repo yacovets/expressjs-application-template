@@ -243,3 +243,106 @@ export async function loginHandler(req, res, next) {
         return next(error)
     }
 }
+
+export async function recovery(req, res, next) {
+
+    try {
+
+        if (req.session.user) {
+            return res.redirect(`/`)
+        }
+
+        return res.render('users/recovery', {
+            title: 'Восстановление доступа',
+            user: req.user,
+            csrfToken: req.csrfToken(),
+            info: {
+                type: req.flash('type')[0],
+                message: req.flash('message')[0]
+            },
+        })
+    } catch (error) {
+        return next(error)
+    }
+}
+
+export async function recoveryHandler(req, res, next) {
+
+    try {
+
+        if (req.session.user) {
+            req.flash('type', 'warn')
+            req.flash('message', `Вы уже авторизовались.`)
+            return res.redirect(`/`)
+        }
+
+        const login = String(req.body.login).trim()
+        const password = String(req.body.password)
+
+        // Valid login or email
+        if ((!login || login === 'undefined')) {
+            req.flash('type', 'warn')
+            req.flash('message', `Введите логин.`)
+            return res.redirect(req.url)
+        }
+        // valid password
+        if (!password || password === 'undefined') {
+            req.flash('type', 'warn')
+            req.flash('message', `Введите пароль.`)
+            return res.redirect(req.url)
+        }
+        if (/^[a-zA-Z]+([-_]?[a-zA-Z0-9]+){0,2}$/.test(login) === false) {
+
+            req.flash('type', 'warn')
+            req.flash('message', `Не верные логин или пароль.`)
+            return res.redirect(req.url)
+        }
+        if (bannedLoginPassword.passwords.indexOf(password.toLowerCase()) != -1) {
+
+            req.flash('type', 'warn')
+            req.flash('message', `Не верные логин или пароль.`)
+            return res.redirect(req.url)
+        }
+
+        const data = await models.users.findOne({
+            where: {
+                login: {
+                    [Op.eq]: login
+                }
+            },
+            include: {
+                model: models.authorizations,
+                as: 'userAuthorizations'
+            },
+            attrubutes: ['id', 'password']
+        })
+
+        if (!data) {
+            req.flash('type', 'warn')
+            req.flash('message', `Не верные логин или пароль.`)
+            return res.redirect(req.url)
+        }
+
+        if (!data.validPassword(password)) {
+
+            await models.authorizations.create({
+                type: 2,
+                status: 2
+            })
+
+            req.flash('type', 'warn')
+            req.flash('message', `Не верные логин или пароль.`)
+            return res.redirect(req.url)
+        }
+
+        req.session.user = {
+            id: data.id
+        }
+
+        req.flash('type', 'info')
+        req.flash('message', `Вы успешно вошли в систему.`)
+        return res.redirect('/')
+    } catch (error) {
+        return next(error)
+    }
+}

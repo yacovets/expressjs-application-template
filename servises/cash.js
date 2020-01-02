@@ -3,69 +3,84 @@ import { Op } from 'sequelize'
 import client from '../include/redis'
 import * as models from '../models'
 
-const adminSecretPath = process.env.ADMIN_SECRET_PATH
 const expiredCash = Number(process.env.EXPIRED_REDIS_CASH)
 
-export async function accessUsers(req, res, next) {
+export function accessUsers(role) {
 
-    try {
+    return async function (req, res, next) {
 
-        if (!req.session || !req.session.user || !req.session.user.id) {
+        try {
 
-            req.flash('type', 'warn')
-            req.flash('message', 'Need login')
-            return res.redirect(`/admin/${adminSecretPath}/login`)
-        }
+            if (!req.session.user || !req.session.user.id) {
 
-        const id = req.session.user.id
-        const key = `user_${id}`
+                req.flash('type', 'warn')
+                req.flash('message', 'Нужна авторизация')
+                return res.redirect(`/login`)
+            }
 
-        let data = await client.get(key)
+            const id = req.session.user.id
+            const key = `user_${id}`
 
-        if (data) {
+            let data = await client.get(key)
 
-            data = JSON.parse(data)
-        }
+            if (data) {
 
-        if (!data) {
-
-            const dataDb = await models.users.findOne({
-                where: {
-                    id: {
-                        [Op.eq]: id
-                    }
+                try {
+                    data = JSON.parse(data)
+                } catch (errorJson) {
+                    data = null
                 }
-            })
-
-            if (!dataDb) {
-
-                req.flash('type', 'warn');
-                req.flash('message', 'Acc not found');
-                return res.redirect(`/admin/${adminSecretPath}/login`)
             }
 
-            data = {
-                id: dataDb.id,
-                role: dataDb.role,
-                login: dataDb.login,
-                status: dataDb.status,
-                email: dataDb.email,
+            if (!data) {
+
+                const dataDb = await models.users.findOne({
+                    where: {
+                        id: {
+                            [Op.eq]: id
+                        },
+                        deleted_at: {
+                            [Op.eq]: null
+                        }
+                    }
+                })
+
+                if (!dataDb) {
+
+                    req.flash('type', 'warn');
+                    req.flash('message', 'Аккаунт не найден');
+                    return res.redirect(`/login`)
+                }
+
+                data = {
+                    id: dataDb.id,
+                    role: dataDb.role,
+                    login: dataDb.login,
+                    email: dataDb.email,
+                    status: dataDb.status,
+                }
+
+                await client.set(key, JSON.stringify(data), 'EX', expiredCash)
             }
 
-            await client.set(key, JSON.stringify(data), 'EX', expiredCash)
+            if (data.status === 0) {
+
+                req.flash('type', 'warn')
+                req.flash('message', 'Ваш аккаунт заблокирован')
+                return res.redirect(`/login`)
+            }
+
+            req.user = data
+
+            if (!role && role.indexOf(data.role) === -1) {
+
+                return next(Error('notFound'))
+            }
+
+            return next()
+
+        } catch (error) {
+            return next(error)
         }
-
-        if (data.status === 0) {
-
-            req.flash('type', 'warn');
-            req.flash('message', 'Block acc');
-            return res.redirect(`/admin/${adminSecretPath}/login`)
-        }
-
-        req.user = data
-        return next()
-
-    } catch (error) {
-        return next(error)
     }
 }

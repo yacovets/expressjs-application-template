@@ -1,14 +1,19 @@
 <!DOCTYPE html>
-
-<title><%= title %> | BitFile</title>
-
+<html lang="ru">
 <head>
-	<link rel="stylesheet" type="text/css" href="/css/style.css">
-	<meta charset="utf-8">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title><%if (title) {%><%= title %> |<%}%> Express.js Template</title>
+
+	<!-- css -->
+	<link rel="stylesheet" type="text/css" href="/css/libs/bootstrap_4.4.1/bootstrap.min.css">
+
+	<!-- js -->
+	<script src="/js/libs/jquery_3.4.1/jquery-3.4.1.min.js"></script>
+	<script src="/js/libs/bootstrap_4.4.1/bootstrap.min.js"></script>
 </head>
-
-<body class="body_index">
-
-    <%- body -%>
-
+<body>
+	<%- body -%>
 </body>
+</html>
