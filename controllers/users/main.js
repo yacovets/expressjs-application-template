@@ -47,7 +47,7 @@ export async function register(req, res, next) {
 export async function registerHandler(req, res, next) {
 
     try {
-
+        
         if (req.session.user) {
             req.flash('type', 'warn')
             req.flash('message', `У вас уже есть аккаунт.`)
@@ -58,6 +58,7 @@ export async function registerHandler(req, res, next) {
         const email = String(req.body.email).trim()
         const password = String(req.body.password)
         const passwordConfirm = String(req.body.password)
+        const consent = Number(req.body.consent)
 
         // Valid login
         if (!login || login === 'undefined') {
@@ -99,7 +100,7 @@ export async function registerHandler(req, res, next) {
             req.flash('message', `Введите пароль повторно.`)
             return res.redirect(req.url)
         }
-        if (!password != passwordConfirm) {
+        if (password != passwordConfirm) {
             req.flash('type', 'warn')
             req.flash('message', `Пароли не совпадают.`)
             return res.redirect(req.url)
@@ -122,6 +123,11 @@ export async function registerHandler(req, res, next) {
             req.flash('message', `Пожалуйста, не используйте стандартные пароли, это может быть не безопасно!`)
             return res.redirect(req.url)
         }
+        if (consent != 1) {
+            req.flash('type', 'warn')
+            req.flash('message', `Нельзя зарегистрировать аккаунт, не приняв политику конфидициальности и правил сервиса.`)
+            return res.redirect(req.url)
+        }
 
         await models.users.create({
             login: login,
@@ -133,7 +139,7 @@ export async function registerHandler(req, res, next) {
         })
 
         req.flash('type', 'info')
-        req.flash('message', `Аккаунт успешно создан, подтвержите пожалуйста ваш email, перейдя по ссылке из письма, которое мы вам отправили на почтовый ящик.`)
+        req.flash('message', `Аккаунт успешно создан, подтвердите пожалуйста ваш email, перейдя по ссылке из письма, которое мы вам отправили на почтовый ящик.`)
         return res.redirect(req.url)
 
     } catch (error) {
