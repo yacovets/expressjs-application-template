@@ -63,6 +63,33 @@ export function accessUsers(role) {
                 await client.set(key, JSON.stringify(data), 'EX', expiredCash)
             }
 
+            let systems = await client.eval(`return {redis.call('get', 'cp_systems_technical_work'), redis.call('get', 'cp_systems_message_top')}`, 1, ``)
+
+            let technicalWork = {
+                status: 0,
+                message: null
+            }
+
+            let message = {
+                message: null
+            }
+
+            try {
+                technicalWork = JSON.parse(systems[0])
+            } catch(e) {}
+
+            try {
+                message = JSON.parse(systems[1])
+            } catch(e) {}
+
+            if (technicalWork.status > 0 && [2].indexOf(data.role) === -1) {
+
+                return res.render('errors/technical_work', {
+                    title: 'На сайте проводятся технические работы',
+                    message: technicalWork.message
+                })
+            }
+
             if (data.status === 0) {
 
                 req.flash('type', 'warn')
@@ -70,12 +97,13 @@ export function accessUsers(role) {
                 return res.redirect(`/login`)
             }
 
-            req.user = data
-
             if (role && role.indexOf(data.role) === -1) {
 
                 return next(Error('notFound'))
             }
+
+            req.user = data
+            req.user.message = message.message
 
             return next()
 

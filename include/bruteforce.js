@@ -2,7 +2,7 @@ import expressBrute from 'express-brute'
 import redisStore from 'express-brute-redis'
 
 const store = new redisStore({
-    prefix: 'brute'
+    prefix: 'brute_'
 })
 
 const failCallback = (req, res, next, nextValidRequestDate) => {

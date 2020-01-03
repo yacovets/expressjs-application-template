@@ -16,4 +16,8 @@ export default app => {
     adminRouter.post('/users/:id/block', admins.users.block)
 
     adminRouter.get('/authorizations', admins.authorizations.get)
+
+    adminRouter.get('/systems', admins.systems.get)
+    adminRouter.post('/systems/technical-work', admins.systems.technicalWork)
+    adminRouter.post('/systems/message', admins.systems.message)
 }

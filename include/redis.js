@@ -2,7 +2,7 @@ import redis from 'redis'
 import asyncRedis from 'async-redis'
 
 const client = redis.createClient({
-    prefix: 'cp',
+    prefix: 'cp_',
     family: 'IPv6'
 })
 

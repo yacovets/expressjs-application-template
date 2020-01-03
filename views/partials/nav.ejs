@@ -17,3 +17,7 @@
        <a href="/logout">Выйти</a>
     </div>
 </nav>
+
+<%if (user.message) {%>
+    <h4 class="text-center" style="color: orange;"><%= user.message %></h4>
+<%}%>

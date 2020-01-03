@@ -3,7 +3,7 @@ import redisStore from 'rate-limit-redis'
 
 const limiterMain = new rateLimit({
     store: new redisStore({
-        prefix: 'limiter'
+        prefix: 'limiter_'
     }),
     windowMs: process.env.LIMITER_EXPIRED,
     max: process.env.LIMITER_MAX_REQ,
