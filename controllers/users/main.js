@@ -1,6 +1,6 @@
 import validator from 'validator'
 import { Op } from 'sequelize'
-import crypto from 'crypto'
+import bcrypt from 'bcrypt'
 
 import * as models from '../../models'
 import { bannedLoginPassword, emails } from '../../templates'
@@ -59,7 +59,7 @@ export async function registerHandler(req, res, next) {
         const login = String(req.body.login).trim()
         const email = String(req.body.email).trim().toLowerCase()
         const password = String(req.body.password)
-        const passwordConfirm = String(req.body.password)
+        const passwordConfirm = String(req.body.passwordConfirm)
         const consent = Number(req.body.consent)
 
         // Valid login
@@ -175,11 +175,8 @@ export async function registerHandler(req, res, next) {
             password: password
         })
 
-        const token = crypto.randomBytes(55).toString('hex')
-
-        await models.emailTokens.create({
+        const createTokens = await models.emailTokens.create({
             user_id: newUser.id,
-            token: token,
             expired_at: new Date(Date.now() + 1000 * 60 * 60 * 24 * 3),
             type: 1,
             status: 1,
@@ -193,7 +190,7 @@ export async function registerHandler(req, res, next) {
             subject: 'Подтверждение почты',
             body: emails.confirmEmail({
                 login: newUser.login,
-                token: token
+                token: createTokens.token
             })
         })
 
@@ -209,7 +206,7 @@ export async function registerHandler(req, res, next) {
 export async function login(req, res, next) {
 
     try {
-        
+
         if (req.session.user) {
             return res.redirect(`/`)
         }
@@ -270,13 +267,16 @@ export async function loginHandler(req, res, next) {
             where: {
                 login: {
                     [Op.eq]: login
+                },
+                deleted_at: {
+                    [Op.eq]: null
                 }
             },
+            attrubutes: ['id', 'password'],
             include: {
                 model: models.authorizations,
                 as: 'userAuthorizations'
-            },
-            attrubutes: ['id', 'password']
+            }
         })
 
         if (!data) {
@@ -299,6 +299,12 @@ export async function loginHandler(req, res, next) {
 
             req.flash('type', 'warn')
             req.flash('message', `Не верные логин или пароль.`)
+            return res.redirect(req.url)
+        }
+
+        if (data.status === 0) {
+            req.flash('type', 'warn')
+            req.flash('message', `Ваш аккаунт заблокирован.`)
             return res.redirect(req.url)
         }
 
@@ -367,7 +373,7 @@ export async function confirm(req, res, next) {
 
         await models.users.update({
             status_email: 1
-        },{
+        }, {
             where: {
                 id: {
                     [Op.eq]: data[1][0].user_id
@@ -391,6 +397,8 @@ export async function recovery(req, res, next) {
     try {
 
         if (req.session.user) {
+            req.flash('type', 'warn')
+            req.flash('message', `Вы уже авторизовались.`)
             return res.redirect(`/`)
         }
 
@@ -437,11 +445,14 @@ export async function recoveryHandler(req, res, next) {
                 email: {
                     [Op.eq]: email
                 },
+                status: {
+                    [Op.ne]: 0
+                },
                 deleted_at: {
                     [Op.eq]: null
                 }
             },
-            attrubutes: ['id', 'email']
+            attrubutes: ['id', 'email', 'login']
         })
 
         if (!data) {
@@ -450,31 +461,239 @@ export async function recoveryHandler(req, res, next) {
             return res.redirect(req.url)
         }
 
-        const token = crypto.randomBytes(55).toString('hex')
-
-        await models.emailTokens.create({
-            user_id: newUser.id,
-            token: token,
-            expired_at: new Date(Date.now() + 1000 * 60 * 60 * 24 * 3),
+        const createTokens = await models.emailTokens.create({
+            user_id: data.id,
+            expired_at: new Date(Date.now() + 1000 * 60 * 60 * 5),
             type: 2,
             status: 1,
             data: {
-                email: newUser.email
+                email: data.email
             }
         })
 
-        servises.email.send({
+        await servises.email.send({
             email: email,
             subject: 'Восстановление доступа',
             body: emails.restore({
-                login: newUser.login,
-                token: token
+                login: data.login,
+                token: createTokens.token
             })
         })
 
         req.flash('type', 'info')
-        req.flash('message', `На ваш email было отправленно письмо с дальнейшими инструкциями.`)
+        req.flash('message', `На ваш email было отправленно письмо с дальнейшими инструкциями. Письмо актуально в течении 5 часов.`)
         return res.redirect('/')
+    } catch (error) {
+        return next(error)
+    }
+}
+
+export async function recoveryFinish(req, res, next) {
+
+    try {
+
+        if (req.session.user) {
+            req.flash('type', 'warn')
+            req.flash('message', `Вы уже авторизовались.`)
+            return res.redirect(`/`)
+        }
+
+        const token = String(req.params.token)
+
+        if (req.session.recovery) {
+
+            if (token != req.session.recovery.token) {
+                req.session.recovery = null
+                return next(Error('notFound'))
+            }
+        } else {
+
+            const data = await models.emailTokens.findOne({
+                where: {
+                    token: {
+                        [Op.eq]: token
+                    },
+                    expired_at: {
+                        [Op.gte]: new Date()
+                    },
+                    type: {
+                        [Op.eq]: 2
+                    },
+                    status: {
+                        [Op.eq]: 1
+                    }
+                },
+                include: {
+                    model: models.users,
+                    as: 'userEmailTokens',
+                    attrubutes: ['status', 'login', 'id'],
+                    where: {
+                        status: {
+                            [Op.ne]: 0
+                        }
+                    }
+                }
+            })
+
+            if (!data) {
+                return next(Error('notFound'))
+            }
+
+            await models.emailTokens.update({
+                status: 2
+            }, {
+                where: {
+                    id: {
+                        [Op.eq]: data.id
+                    }
+                }
+            })
+
+            req.session.recovery = {
+                expiredAt: new Date(Date.now() + 1000 * 60 * 30),
+                token: token,
+                idDb: data.id,
+                login: data.userEmailTokens.login,
+                idUser: data.userEmailTokens.id,
+                requests: 0
+            }
+        }
+
+        return res.render('users/recovery_finish', {
+            title: 'Завершение процедуры восстановления доступа',
+            user: req.user,
+            csrfToken: req.csrfToken(),
+            info: {
+                type: req.flash('type')[0],
+                message: req.flash('message')[0]
+            }
+        })
+    } catch (error) {
+        return next(error)
+    }
+}
+
+export async function recoveryFinishHandler(req, res, next) {
+
+    try {
+
+        if (req.session.user) {
+            req.flash('type', 'warn')
+            req.flash('message', `Вы уже авторизовались.`)
+            return res.redirect(`/`)
+        }
+
+        const token = String(req.params.token)
+
+        if (!req.session.recovery) {
+            return next(Error('notFound'))
+        }
+
+        if (token != req.session.recovery.token) {
+            req.session.recovery = null
+            return next(Error('notFound'))
+        }
+
+        if (new Date(req.session.recovery.expiredAt) < new Date()) {
+
+            req.session.recovery = null
+            req.flash('type', 'warn')
+            req.flash('message', `Время на восстановление доступа вышло, в целях безопасности повторите восстановление еще раз.`)
+            return res.redirect('/login')
+        }
+
+        if (req.session.recovery.requests >= 20) {
+
+            req.session.recovery = null
+            req.flash('type', 'warn')
+            req.flash('message', `Вы сделали слишком много запросов, в целях безопасности повторите восстановление еще раз.`)
+            return res.redirect('/login')
+        }
+
+        req.session.recovery.requests++
+
+        const password = String(req.body.password)
+        const passwordConfirm = String(req.body.passwordConfirm)
+
+        // valid password
+        if (!password || password === 'undefined') {
+            req.flash('type', 'warn')
+            req.flash('message', `Введите пароль.`)
+            return res.redirect(req.url)
+        }
+        if (!passwordConfirm || passwordConfirm === 'undefined') {
+            req.flash('type', 'warn')
+            req.flash('message', `Введите пароль повторно.`)
+            return res.redirect(req.url)
+        }
+        if (password != passwordConfirm) {
+            req.flash('type', 'warn')
+            req.flash('message', `Пароли не совпадают.`)
+            return res.redirect(req.url)
+        }
+        if (password.length < 7 || password.length > 60) {
+
+            req.flash('type', 'warn')
+            req.flash('message', `Пароль должен быть не менее 7 символов и не более 60.`)
+            return res.redirect(req.url)
+        }
+        if (password.toLowerCase().indexOf(req.session.recovery.login.toLowerCase()) != -1) {
+
+            req.flash('type', 'warn')
+            req.flash('message', `Пожалуйста, не используйте в пароле свой логин, это может быть не безопасно!`)
+            return res.redirect(req.url)
+        }
+        if (bannedLoginPassword.passwords.indexOf(password.toLowerCase()) != -1) {
+
+            req.flash('type', 'warn')
+            req.flash('message', `Пожалуйста, не используйте стандартные пароли, это может быть не безопасно!`)
+            return res.redirect(req.url)
+        }
+
+        const saltRounds = 10
+        const salt = bcrypt.genSaltSync(saltRounds)
+        const hash = bcrypt.hashSync(password, salt)
+
+        const updateEmailTokens = await models.emailTokens.update({
+            status: 3
+        }, {
+            where: {
+                id: {
+                    [Op.eq]: req.session.recovery.idDb
+                },
+                status: {
+                    [Op.eq]: 2
+                },
+                type: {
+                    [Op.eq]: 2
+                }
+            }
+        })
+
+        if (updateEmailTokens != 1) {
+
+            return next(Error('Error update status emailTokens'))
+        }
+
+        await models.users.update({
+            password: hash
+        }, {
+            where: {
+                id: {
+                    [Op.eq]: req.session.recovery.idUser
+                },
+                status: {
+                    [Op.ne]: 0
+                }
+            }
+        })
+
+        req.session.recovery = null
+
+        req.flash('type', 'info')
+        req.flash('message', `Ваш пароль успешно восстановлен.`)
+        return res.redirect('/login')
+
     } catch (error) {
         return next(error)
     }

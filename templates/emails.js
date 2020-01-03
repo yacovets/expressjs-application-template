@@ -15,7 +15,7 @@ export function confirmEmail(data) {
     `
 }
 
-export function restore() {
+export function restore(data) {
 
     return `
     <h3>
@@ -24,7 +24,7 @@ export function restore() {
     Для завершения, перейдите по ссылке ниже.
     <br>
     <br>
-    <a href="${urlApp}/restore/${data.token}">Завершить восстановление доступа</a>
+    <a href="${urlApp}/recovery/${data.token}">Завершить восстановление доступа</a>
     </h3>
     `
 }

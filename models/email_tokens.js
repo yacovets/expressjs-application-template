@@ -1,4 +1,5 @@
 import Sequelize from 'sequelize'
+import crypto from 'crypto'
 
 import sequelize from '../include/db'
 
@@ -42,5 +43,11 @@ const model = sequelize.define('email_tokens', {
     }
 })
 
+model.beforeSave((emailToken, options) => {
+
+    const token = crypto.randomBytes(60).toString('hex')
+
+    return emailToken.token = token
+})
 
 export default model
