@@ -2,7 +2,6 @@ import express from 'express'
 
 import { admins } from '../controllers'
 import { cash } from '../servises'
-import { userBruteforce, globalBruteforce } from '../include/bruteforce'
 
 export default app => {
 
@@ -10,5 +9,5 @@ export default app => {
 
     app.use(`/admin`, cash.accessUsers([2]), adminRouter)
 
-    adminRouter.get('/', admins.main.home)
+    adminRouter.get('/users', admins.users.get)
 }

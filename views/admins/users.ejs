@@ -1,0 +1,47 @@
+<% layout('../layouts/main') -%>
+<%-partial('../partials/nav')%>
+<%-partial('../partials/messages')%>
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Главная</a></li>
+        <li class="breadcrumb-item"><a href="/admin">Админ</a></li>
+        <li class="breadcrumb-item active" aria-current="page"><%= title %></li>
+    </ol>
+</nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <%if (data && data.length > 0) {%>
+            <table class="table table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">Id</th>
+                        <th scope="col">Логин</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Роль</th>
+                        <th scope="col">Статус</th>
+                        <th scope="col">Дата регистрации</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% data.forEach(function(element) { %>
+                    <tr style="cursor: pointer" <%if (element.role != 1) {%>class="table-success"
+                        <%}%> onclick="window.location.href='/admin/users/<%=element.id%>'; return false">
+                        <th><%=element.id%></th>
+                        <th><%=element.login%></th>
+                        <th><%=element.email%> <%if (element.status_email === 2) {%>(не верифицирован)<%}%></th>
+                        <th><%=element.roleName%></th>
+                        <th><%=element.statusName%></th>
+                        <th><%=element.createdAt%></th>
+                    </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+            <%} else {%>
+            <h3 class="text-center">Нет данных</h3>
+            <%}%>
+        </div>
+    </div>
+</div>

@@ -11,12 +11,9 @@
                 <a class="nav-link" href="/">Домашняя <span class="sr-only">(current)</span></a>
             </li>
             <%if (user && user.role === 2) {%>
-                <%- partial('./nav_admin')%>
+            <%- partial('./nav_admin')%>
             <%}%>
         </ul>
-        <form class="form-inline my-2 my-lg-0">
-            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-        </form>
+       <a href="/logout">Выйти</a>
     </div>
 </nav>

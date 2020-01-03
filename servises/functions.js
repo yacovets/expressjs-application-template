@@ -1,16 +1,18 @@
 import request from 'request'
 import moment from 'moment'
 
-export function convFileSize(b){
+const formatDate = process.env.FORMAT_DATE
 
-    let fsize
+export function convFileSize(b) {
+
+	let fsize
 	let fsizekb = b / 1024;
-    let fsizemb = fsizekb / 1024;
+	let fsizemb = fsizekb / 1024;
 	let fsizegb = fsizemb / 1024;
 	let fsizetb = fsizegb / 1024;
 
 	if (fsizekb <= 1024) {
-        fsize = fsizekb.toFixed(3) + ' KB';
+		fsize = fsizekb.toFixed(3) + ' KB';
 	} else if (fsizekb >= 1024 && fsizemb <= 1024) {
 		fsize = fsizemb.toFixed(3) + ' MB';
 	} else if (fsizemb >= 1024 && fsizegb <= 1024) {
@@ -19,28 +21,35 @@ export function convFileSize(b){
 		fsize = fsizetb.toFixed(3) + ' TB';
 	}
 
-    return fsize;
+	return fsize;
 
 }
 
 export function awaitRequest(data) {
 
-    return new Promise(function (resolve, reject) {
+	return new Promise(function (resolve, reject) {
 
-        request(data, function (error, res) {
+		request(data, function (error, res) {
 
-            if (!error) {
+			if (!error) {
 
-                resolve(res)
-            } else {
+				resolve(res)
+			} else {
 
-                reject(error)
-            }
-        })
-    })
+				reject(error)
+			}
+		})
+	})
 }
 
-export function formatDateDb (data) {
+export function formatDateDb(data) {
+
+	if (!data.format) {
+		data.format = formatDate
+	}
+	if (!data.field) {
+		data.field = 'createdAt'
+	}
 
 	let newData = []
 
@@ -52,19 +61,11 @@ export function formatDateDb (data) {
 
 		for (let i in data.data) {
 
-			var copy = data.data[i];
+			var copy = data.data[i]
 
-			if (copy.createdAt) {
+			copy[`${data.field}Original`] = copy[data.field]
 
-				copy.createdAtOriginal = copy.createdAt
-				copy.createdAt = moment(copy.createdAt).format(data.format)
-			}
-
-			if (copy.updatedAt) {
-
-				copy.updatedAtOriginal = copy.updatedAt
-				copy.updatedAt = moment(copy.updatedAt).format(data.format)
-			}
+			copy[data.field] = moment(copy[data.field]).format(data.format)
 
 			newData.push(copy);
 		}
@@ -72,16 +73,9 @@ export function formatDateDb (data) {
 
 		for (let i in data.data) {
 
-			var copy = data.data[i];
+			var copy = data.data[i]
 
-			if (copy.createdAt) {
-
-				copy.createdAt = moment(copy.createdAt).format(data.format)
-			}
-
-			if (copy.updatedAt) {
-				copy.updatedAt = moment(copy.updatedAt).format(data.format)
-			}
+			copy[data.field] = moment(copy[data.field]).format(data.format)
 
 			newData.push(copy);
 		}

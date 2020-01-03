@@ -19,5 +19,5 @@ export default app => {
     app.get('/recovery/:token', users.main.recoveryFinish)
     app.post('/recovery/:token', globalBruteforce.prevent, users.main.recoveryFinishHandler)
 
-    app.get('/confirm/:token', users.main.confirm)
+    app.get('/confirm/:token', globalBruteforce.prevent, users.main.confirm)
 }

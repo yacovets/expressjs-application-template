@@ -1,3 +1,3 @@
-import * as main from './main'
+import * as users from './users'
 
-export { main }
+export { users }

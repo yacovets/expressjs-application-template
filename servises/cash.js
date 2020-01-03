@@ -84,3 +84,17 @@ export function accessUsers(role) {
         }
     }
 }
+
+export async function deleteCashUser (id) {
+
+    try {
+
+        const key = `user_${id}`
+
+        await client.del(key)
+
+        return true
+    } catch (error) {
+        return error
+    }
+}

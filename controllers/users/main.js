@@ -3,7 +3,8 @@ import { Op } from 'sequelize'
 import bcrypt from 'bcrypt'
 
 import * as models from '../../models'
-import { bannedLoginPassword, emails } from '../../templates'
+import { emails } from '../../templates'
+import { bannedLoginPassword } from '../../constants'
 import * as servises from '../../servises'
 
 export async function home(req, res, next) {
@@ -20,7 +21,7 @@ export async function home(req, res, next) {
             },
         })
     } catch (error) {
-        console.error(error)
+        return next(error)
     }
 }
 
@@ -335,6 +336,7 @@ export async function logout(req, res, next) {
     try {
 
         if (req.session.user) {
+            servises.cash.deleteCashUser(req.session.user.id)
             req.session.user = null
         }
 
