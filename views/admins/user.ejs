@@ -1,0 +1,41 @@
+<% layout('../layouts/main') -%>
+<%-partial('../partials/nav')%>
+<%-partial('../partials/messages')%>
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Главная</a></li>
+        <li class="breadcrumb-item"><a href="/admin">Админ</a></li>
+        <li class="breadcrumb-item"><a href="/admin/users">Пользователи</a></li>
+        <li class="breadcrumb-item active" aria-current="page"><%= title %></li>
+    </ol>
+</nav>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <h3 class="text-center">Информация</h3>
+            <hr>
+            <p><b>Id: </b><%= data.id %></p>
+            <p><b>Логин: </b><%= data.login %></p>
+            <p><b>Email: </b><%= data.email %></p>
+            <p><b>Роль: </b><%= data.roleName %></p>
+            <p><b>Статус: </b><%= data.statusName %></p>
+            <p><b>Реферал: </b><%if (data.userRef) {%> <a href="/admin/users/<%= data.userRef.id %>"><%= data.userRef.login %></a> <%}else{%>нет реферала<%}%></p>
+            <p><b>Дата регистрации: </b><%= data.createdAt %></p>
+        </div>
+        <div class="col-md-6">
+            <h3 class="text-center">Действия</h3>
+            <hr>
+            <a href="/admin/users/<%= data.id %>/edit" class="btn btn-warning btn-block">Редактировать</a>
+            <a href="/admin/users?ref=<%= data.id %>" class="btn btn-info btn-block">Список рефералов</a>
+            <a href="/admin/authorizations?user=<%= data.id %>" class="btn btn-success btn-block">История авторизаций</a>
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-md-6">
+           
+        </div>
+    </div>
+</div>

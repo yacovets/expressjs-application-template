@@ -10,4 +10,7 @@ export default app => {
     app.use(`/admin`, cash.accessUsers([2]), adminRouter)
 
     adminRouter.get('/users', admins.users.get)
+    adminRouter.get('/users/:id', admins.users.getOne)
+
+    adminRouter.get('/authorizations', admins.authorizations.get)
 }

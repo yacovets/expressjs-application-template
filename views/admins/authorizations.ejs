@@ -18,24 +18,27 @@
                 <thead class="thead-dark">
                     <tr>
                         <th scope="col">Id</th>
-                        <th scope="col">Логин</th>
-                        <th scope="col">Email</th>
-                        <th scope="col">Роль</th>
+                        <th scope="col">Пользователь</th>
+                        <th scope="col">Тип</th>
                         <th scope="col">Статус</th>
-                        <th scope="col">Реферал</th>
+                        <th scope="col">Ip</th>
+                        <th scope="col">ОС</th>
+                        <th scope="col">Платформа</th>
+                        <th scope="col">Браузер</th>
                         <th scope="col">Дата регистрации</th>
                     </tr>
                 </thead>
                 <tbody>
                     <% data.forEach(function(element) { %>
-                    <tr style="cursor: pointer" <%if (element.role != 1) {%>class="table-success"
-                        <%}%> onclick="window.location.href='/admin/users/<%=element.id%>'; return false">
+                    <tr>
                         <th><%=element.id%></th>
-                        <th><%=element.login%></th>
-                        <th><%=element.email%> <%if (element.status_email === 2) {%>(не верифицирован)<%}%></th>
-                        <th><%=element.roleName%></th>
+                        <th><%=element.userAuthorizations.login%></th>
+                        <th><%=element.typeName%></th>
                         <th><%=element.statusName%></th>
-                        <th><%if (element.userRef) {%> <a href="/admin/users/<%= element.userRef.id %>"><%= element.userRef.login %></a> <%}else{%><%}%></th>
+                        <th><%=element.ip%></th>
+                        <th><%=element.os%></th>
+                        <th><%=element.platform%></th>
+                        <th><%=element.browser%></th>
                         <th><%=element.createdAt%></th>
                     </tr>
                     <% }); %>

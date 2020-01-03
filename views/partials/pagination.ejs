@@ -1,0 +1,18 @@
+
+<%if (pagination && pagination.pages > 1) {%>
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center">
+            <li class="page-item <%= pagination.page <= 1 ? 'disabled' : '' %>">
+                <a class="page-link" href="?page=<%= pagination.page - 1 %>" tabindex="-1" aria-disabled="true"><<</a> 
+            </li>
+    
+            <%for (let i=1; i <= pagination.pages; i++) {%>
+                <li class="page-item <%= pagination.page === i ? 'active' : '' %>"><a class="page-link" href="?page=<%= i %>"><%= i %></a></li>
+            <%}%>
+    
+            <li class="page-item <%= pagination.page >= pagination.pages ? 'disabled' : '' %>">
+                <a class="page-link" href="?page=<%= pagination.page + 1 %>">>></a>
+            </li>
+        </ul>
+    </nav>
+<%}%>
