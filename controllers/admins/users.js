@@ -1,8 +1,10 @@
 import { Op } from 'sequelize'
+import validator from 'validator'
 
 import * as models from '../../models'
 import { names } from '../../constants'
 import * as servises from '../../servises'
+import { emails } from '../../templates'
 
 export async function get(req, res, next) {
 
@@ -11,19 +13,19 @@ export async function get(req, res, next) {
         let page = Number(req.query.page)
         let search = String(req.query.search).trim()
         let ref = Number(req.query.ref)
-        
-		const limit = 100
 
-		if (!page || page <= 0) {
+        const limit = 100
 
-			page = 1
-		}
+        if (!page || page <= 0) {
 
-		let where = {}
+            page = 1
+        }
 
-		if (search && search != 'undefined') {
+        let where = {}
 
-			where.login = {
+        if (search && search != 'undefined') {
+
+            where.login = {
                 [Op.like]: `%${search}%`
             }
         }
@@ -33,7 +35,7 @@ export async function get(req, res, next) {
                 [Op.eq]: ref
             }
         }
-        
+
         const data = await models.users.findAndCountAll({
             where,
             order: [['createdAt', 'DESC']],
@@ -57,7 +59,7 @@ export async function get(req, res, next) {
 
             user.roleName = names.roleUser[user.role] ? names.roleUser[user.role].name : `role:${user.role}`
             user.statusName = names.statusUser[user.status] ? names.statusUser[user.status].name : `status:${user.status}`
-        }  
+        }
 
         return res.render('admins/users', {
             title: 'Список пользователей',
@@ -83,8 +85,8 @@ export async function getOne(req, res, next) {
 
     try {
 
-		const id = Number(req.params.id)
-        
+        const id = Number(req.params.id)
+
         let data = await models.users.findOne({
             where: {
                 id: {
@@ -97,6 +99,10 @@ export async function getOne(req, res, next) {
                 attributes: ['id', 'login']
             }],
         })
+
+        if (!data) {
+            return next(Error('notFound'))
+        }
 
         data = servises.func.formatDateDb({
             data: [data],
@@ -116,6 +122,173 @@ export async function getOne(req, res, next) {
             },
             data: data
         })
+    } catch (error) {
+        return next(error)
+    }
+}
+
+export async function edit(req, res, next) {
+
+    try {
+
+        const id = Number(req.params.id)
+
+        let data = await models.users.findOne({
+            where: {
+                id: {
+                    [Op.eq]: id
+                }
+            },
+            include: [{
+                model: models.users,
+                as: 'userRef',
+                attributes: ['id', 'login']
+            }],
+        })
+
+        if (!data) {
+            return next(Error('notFound'))
+        }
+
+        data = servises.func.formatDateDb({
+            data: [data],
+            type: 'copy'
+        })[0]
+
+        return res.render('admins/edit_user', {
+            title: 'Редактирование профиля пользователя',
+            user: req.user,
+            csrfToken: req.csrfToken(),
+            info: {
+                type: req.flash('type')[0],
+                message: req.flash('message')[0]
+            },
+            data: {
+                user: data,
+                roles: names.roleUser
+            }
+        })
+    } catch (error) {
+        return next(error)
+    }
+}
+
+export async function editHandler(req, res, next) {
+
+    try {
+
+        const id = Number(req.params.id)
+
+        const email = String(req.body.email).trim().toLowerCase()
+        const verifEmail = Number(req.body.verifEmail)
+        const emailStatus = Number(req.body.emailStatus)
+        const role = Number(req.body.role)
+
+        // Valid email
+        if (!email || email === 'undefined' || !validator.isEmail(email)) {
+            req.flash('type', 'warn')
+            req.flash('message', `Введите email.`)
+            return res.redirect(req.originalUrl)
+        }
+        if (!validator.isEmail(email)) {
+            req.flash('type', 'warn')
+            req.flash('message', `Введите корректный email.`)
+            return res.redirect(req.originalUrl)
+        }
+        // Valid status email
+        if ([1, 2].indexOf(emailStatus) === -1) {
+            req.flash('type', 'warn')
+            req.flash('message', `Выберите статус верификации почты.`)
+            return res.redirect(req.originalUrl)
+        }
+        // Valid role
+        if (!names.roleUser[role]) {
+            req.flash('type', 'warn')
+            req.flash('message', `Выберите верную роль.`)
+            return res.redirect(req.originalUrl)
+        }
+
+        const resUpdate = await models.users.update({
+            email: email,
+            status_email: emailStatus,
+            role: role
+        }, {
+            where: {
+                id: {
+                    [Op.eq]: id
+                }
+            },
+            returning: true
+        })
+
+        if (verifEmail === 1) {
+
+            const createTokens = await models.emailTokens.create({
+                user_id: resUpdate[1][0].id,
+                expired_at: new Date(Date.now() + 1000 * 60 * 60 * 24 * 3),
+                type: 1,
+                status: 1,
+                data: {
+                    email: email
+                }
+            })
+
+            servises.email.send({
+                email: email,
+                subject: 'Подтверждение почты',
+                body: emails.confirmEmail({
+                    login: resUpdate[1][0].login,
+                    token: createTokens.token
+                })
+            })
+        }
+
+        req.flash('type', 'info')
+        req.flash('message', `Профиль пользователя отредактирован.`)
+        return res.redirect(req.originalUrl)
+    } catch (error) {
+        return next(error)
+    }
+}
+
+export async function block(req, res, next) {
+
+    try {
+
+        const id = Number(req.params.id)
+
+        let data = await models.users.findOne({
+            where: {
+                id: {
+                    [Op.eq]: id
+                }
+            },
+            attributes: ['id', 'status']
+        })
+
+        if (!data) {
+            return next(Error('notFound'))
+        }
+
+        let status = 1
+
+        if (data.status === 1) {
+            status = 0
+        }
+
+        await models.users.update({
+            status: status
+        }, {
+            where: {
+                id: {
+                    [Op.eq]: id
+                }
+            }
+        })
+
+        req.flash('type', 'info')
+        req.flash('message', `Статус изменен.`)
+        return res.redirect(`/admin/users/${id}`)
     } catch (error) {
         return next(error)
     }

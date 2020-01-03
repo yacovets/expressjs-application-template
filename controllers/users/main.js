@@ -67,69 +67,69 @@ export async function registerHandler(req, res, next) {
         if (!login || login === 'undefined') {
             req.flash('type', 'warn')
             req.flash('message', `Введите логин.`)
-            return res.redirect(req.url)
+            return res.redirect(req.originalUrl)
         }
         if (/^[a-zA-Z]+([-_]?[a-zA-Z0-9]+){0,2}$/.test(login) === false) {
 
             req.flash('type', 'warn')
             req.flash('message', `В логине должны быть только латинские буквы, цифры и знаки - _, но не более одного знака подряд. Логин должен начинатся с буквы, а оканчиватся буквой или цифрой!`)
-            return res.redirect(req.url)
+            return res.redirect(req.originalUrl)
         }
         if (bannedLoginPassword.logins.indexOf(login.toLowerCase()) != -1) {
 
             req.flash('type', 'warn')
             req.flash('message', `Данный логин уже занят, попробуйте дургой.`)
-            return res.redirect(req.url)
+            return res.redirect(req.originalUrl)
         }
         // Valid email
         if (!email || email === 'undefined' || !validator.isEmail(email)) {
             req.flash('type', 'warn')
             req.flash('message', `Введите email.`)
-            return res.redirect(req.url)
+            return res.redirect(req.originalUrl)
         }
         if (!validator.isEmail(email)) {
             req.flash('type', 'warn')
             req.flash('message', `Введите корректный email.`)
-            return res.redirect(req.url)
+            return res.redirect(req.originalUrl)
         }
         // valid password
         if (!password || password === 'undefined') {
             req.flash('type', 'warn')
             req.flash('message', `Введите пароль.`)
-            return res.redirect(req.url)
+            return res.redirect(req.originalUrl)
         }
         if (!passwordConfirm || passwordConfirm === 'undefined') {
             req.flash('type', 'warn')
             req.flash('message', `Введите пароль повторно.`)
-            return res.redirect(req.url)
+            return res.redirect(req.originalUrl)
         }
         if (password != passwordConfirm) {
             req.flash('type', 'warn')
             req.flash('message', `Пароли не совпадают.`)
-            return res.redirect(req.url)
+            return res.redirect(req.originalUrl)
         }
         if (password.length < 7 || password.length > 60) {
 
             req.flash('type', 'warn')
             req.flash('message', `Пароль должен быть не менее 7 символов и не более 60.`)
-            return res.redirect(req.url)
+            return res.redirect(req.originalUrl)
         }
         if (password.toLowerCase().indexOf(login.toLowerCase()) != -1) {
 
             req.flash('type', 'warn')
             req.flash('message', `Пожалуйста, не используйте в пароле свой логин, это может быть не безопасно!`)
-            return res.redirect(req.url)
+            return res.redirect(req.originalUrl)
         }
         if (bannedLoginPassword.passwords.indexOf(password.toLowerCase()) != -1) {
 
             req.flash('type', 'warn')
             req.flash('message', `Пожалуйста, не используйте стандартные пароли, это может быть не безопасно!`)
-            return res.redirect(req.url)
+            return res.redirect(req.originalUrl)
         }
         if (consent != 1) {
             req.flash('type', 'warn')
             req.flash('message', `Нельзя зарегистрировать аккаунт, не приняв политику конфидициальности и правил сервиса.`)
-            return res.redirect(req.url)
+            return res.redirect(req.originalUrl)
         }
 
         let search = await models.users.findOne({
@@ -156,14 +156,14 @@ export async function registerHandler(req, res, next) {
 
                 req.flash('type', 'warn')
                 req.flash('message', `Данный логин уже занят, попробуйте дургой.`)
-                return res.redirect(req.url)
+                return res.redirect(req.originalUrl)
             }
 
             if (search.email === email) {
 
                 req.flash('type', 'warn')
                 req.flash('message', `Аккаунт с данным email уже создан, укажите другой email.`)
-                return res.redirect(req.url)
+                return res.redirect(req.originalUrl)
             }
         }
 
@@ -197,7 +197,7 @@ export async function registerHandler(req, res, next) {
 
         req.flash('type', 'info')
         req.flash('message', `Аккаунт успешно создан, подтвердите пожалуйста ваш email, перейдя по ссылке из письма, которое мы вам отправили на почтовый ящик. Ссылка активна в течении 3-х суток.`)
-        return res.redirect(req.url)
+        return res.redirect(req.originalUrl)
 
     } catch (error) {
         return next(error)
@@ -243,25 +243,25 @@ export async function loginHandler(req, res, next) {
         if ((!login || login === 'undefined')) {
             req.flash('type', 'warn')
             req.flash('message', `Введите логин.`)
-            return res.redirect(req.url)
+            return res.redirect(req.originalUrl)
         }
         // valid password
         if (!password || password === 'undefined') {
             req.flash('type', 'warn')
             req.flash('message', `Введите пароль.`)
-            return res.redirect(req.url)
+            return res.redirect(req.originalUrl)
         }
         if (/^[a-zA-Z]+([-_]?[a-zA-Z0-9]+){0,2}$/.test(login) === false) {
 
             req.flash('type', 'warn')
             req.flash('message', `Не верные логин или пароль.`)
-            return res.redirect(req.url)
+            return res.redirect(req.originalUrl)
         }
         if (bannedLoginPassword.passwords.indexOf(password.toLowerCase()) != -1) {
 
             req.flash('type', 'warn')
             req.flash('message', `Не верные логин или пароль.`)
-            return res.redirect(req.url)
+            return res.redirect(req.originalUrl)
         }
 
         const data = await models.users.findOne({
@@ -283,7 +283,7 @@ export async function loginHandler(req, res, next) {
         if (!data) {
             req.flash('type', 'warn')
             req.flash('message', `Не верные логин или пароль.`)
-            return res.redirect(req.url)
+            return res.redirect(req.originalUrl)
         }
 
         if (!data.validPassword(password)) {
@@ -300,13 +300,13 @@ export async function loginHandler(req, res, next) {
 
             req.flash('type', 'warn')
             req.flash('message', `Не верные логин или пароль.`)
-            return res.redirect(req.url)
+            return res.redirect(req.originalUrl)
         }
 
         if (data.status === 0) {
             req.flash('type', 'warn')
             req.flash('message', `Ваш аккаунт заблокирован.`)
-            return res.redirect(req.url)
+            return res.redirect(req.originalUrl)
         }
 
         req.session.user = {
@@ -434,12 +434,12 @@ export async function recoveryHandler(req, res, next) {
         if (!email || email === 'undefined' || !validator.isEmail(email)) {
             req.flash('type', 'warn')
             req.flash('message', `Введите email.`)
-            return res.redirect(req.url)
+            return res.redirect(req.originalUrl)
         }
         if (!validator.isEmail(email)) {
             req.flash('type', 'warn')
             req.flash('message', `Введите корректный email.`)
-            return res.redirect(req.url)
+            return res.redirect(req.originalUrl)
         }
 
         const data = await models.users.findOne({
@@ -460,7 +460,7 @@ export async function recoveryHandler(req, res, next) {
         if (!data) {
             req.flash('type', 'warn')
             req.flash('message', `Ваш аккаунт не найден.`)
-            return res.redirect(req.url)
+            return res.redirect(req.originalUrl)
         }
 
         const createTokens = await models.emailTokens.create({
@@ -621,35 +621,35 @@ export async function recoveryFinishHandler(req, res, next) {
         if (!password || password === 'undefined') {
             req.flash('type', 'warn')
             req.flash('message', `Введите пароль.`)
-            return res.redirect(req.url)
+            return res.redirect(req.originalUrl)
         }
         if (!passwordConfirm || passwordConfirm === 'undefined') {
             req.flash('type', 'warn')
             req.flash('message', `Введите пароль повторно.`)
-            return res.redirect(req.url)
+            return res.redirect(req.originalUrl)
         }
         if (password != passwordConfirm) {
             req.flash('type', 'warn')
             req.flash('message', `Пароли не совпадают.`)
-            return res.redirect(req.url)
+            return res.redirect(req.originalUrl)
         }
         if (password.length < 7 || password.length > 60) {
 
             req.flash('type', 'warn')
             req.flash('message', `Пароль должен быть не менее 7 символов и не более 60.`)
-            return res.redirect(req.url)
+            return res.redirect(req.originalUrl)
         }
         if (password.toLowerCase().indexOf(req.session.recovery.login.toLowerCase()) != -1) {
 
             req.flash('type', 'warn')
             req.flash('message', `Пожалуйста, не используйте в пароле свой логин, это может быть не безопасно!`)
-            return res.redirect(req.url)
+            return res.redirect(req.originalUrl)
         }
         if (bannedLoginPassword.passwords.indexOf(password.toLowerCase()) != -1) {
 
             req.flash('type', 'warn')
             req.flash('message', `Пожалуйста, не используйте стандартные пароли, это может быть не безопасно!`)
-            return res.redirect(req.url)
+            return res.redirect(req.originalUrl)
         }
 
         const saltRounds = 10
