@@ -45,3 +45,24 @@ export const typeAuthorizations = {
         name: 'Восстановление доступа'
     }
 }
+
+export const statusNotifications = {
+    '1': {
+        name: 'Прочитано'
+    },
+    '2': {
+        name: 'Не прочитано'
+    }
+}
+
+export const typeNotifications = {
+    '1': {
+        name: 'Система'
+    },
+    '2': {
+        name: 'Администратор'
+    },
+    '3': {
+        name: 'Рассылка'
+    }
+}

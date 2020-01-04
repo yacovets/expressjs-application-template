@@ -20,4 +20,6 @@ export default app => {
     app.post('/recovery/:token', globalBruteforce.prevent, users.main.recoveryFinishHandler)
 
     app.get('/confirm/:token', globalBruteforce.prevent, users.main.confirm)
+
+    app.get('/notifications', cash.accessUsers(), users.notifications.get)
 }

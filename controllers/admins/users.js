@@ -293,3 +293,53 @@ export async function block(req, res, next) {
         return next(error)
     }
 }
+
+export async function sendNotifications(req, res, next) {
+
+    try {
+
+        const id = Number(req.params.id)
+
+        const name = String(req.body.name).trim()
+        const text = String(req.body.text).trim()
+
+        if (!name || name === 'undefined') {
+            req.flash('type', 'warn')
+            req.flash('message', `Введите название.`)
+            return res.redirect(`/admin/users/${id}`)
+        }
+        if (!text || text === 'undefined') {
+            req.flash('type', 'warn')
+            req.flash('message', `Введите текст.`)
+            return res.redirect(`/admin/users/${id}`)
+        }
+
+        let data = await models.users.findOne({
+            where: {
+                id: {
+                    [Op.eq]: id
+                }
+            }
+        })
+
+        if (!data) {
+            return next(Error('notFound'))
+        }
+
+        await models.notifications.create({
+            user_id: id,
+            admin_id: req.user.id,
+            type: 2,
+            level: 1,
+            status: 2,
+            name: name,
+            text: text,
+        })
+
+        req.flash('type', 'info')
+        req.flash('message', `Уведомление успешно отправленно`)
+        return res.redirect(`/admin/users/${id}`)
+    } catch (error) {
+        return next(error)
+    }
+}
