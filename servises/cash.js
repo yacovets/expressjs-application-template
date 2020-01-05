@@ -13,6 +13,7 @@ export function accessUsers(role) {
 
             if (!req.session.user || !req.session.user.id) {
 
+                req.session.user = null
                 req.flash('type', 'warn')
                 req.flash('message', 'Нужна авторизация')
                 return res.redirect(`/login`)
@@ -47,6 +48,7 @@ export function accessUsers(role) {
 
                 if (!dataDb) {
 
+                    req.session.user = null
                     req.flash('type', 'warn');
                     req.flash('message', 'Аккаунт не найден');
                     return res.redirect(`/login`)
@@ -63,7 +65,7 @@ export function accessUsers(role) {
                 await client.set(key, JSON.stringify(data), 'EX', expiredCash)
             }
 
-            let systems = await client.eval(`return {redis.call('get', 'cp_systems_technical_work'), redis.call('get', 'cp_systems_message_top')}`, 1, ``)
+            let systems = await client.eval(`return {redis.call('get', 'cp_systems_technical_work'), redis.call('get', 'cp_systems_message_top')}`, 0)
 
             let technicalWork = {
                 status: 0,
@@ -92,6 +94,7 @@ export function accessUsers(role) {
 
             if (data.status === 0) {
 
+                req.session.user = null
                 req.flash('type', 'warn')
                 req.flash('message', 'Ваш аккаунт заблокирован')
                 return res.redirect(`/login`)
@@ -105,7 +108,7 @@ export function accessUsers(role) {
             const keyNotifications = `notifications_user_${id}`
 
             let notifications = await client.lrange(keyNotifications, 0, -1)
-            
+
             let notificationsSave = []
             
             for (const notif of notifications) {

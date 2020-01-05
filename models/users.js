@@ -1,6 +1,6 @@
 import Sequelize from 'sequelize'
 import bcrypt from 'bcrypt'
-import { Op } from 'sequelize'
+const Hashids = require('hashids/cjs')
 
 import sequelize from '../include/db'
 
@@ -54,9 +54,34 @@ const model = sequelize.define('users', {
     }
 })
 
+const hashids = new Hashids(process.env.HASHIDS_USERS_SECRET)
+
 model.prototype.validPassword = function (password) {
     return bcrypt.compareSync(password, this.password);
-};
+}
+
+model.prototype.hashId = function (data) {
+
+    let type
+
+    if (!data) {
+        data = this.id
+    }
+
+    if (Number(data)) {
+        type = 'encode'
+    } else {
+        type = 'decode'
+    }
+
+    if (type === 'encode') {
+
+        return hashids.encode(data)
+    } else {
+
+        return hashids.decode(data)[0]
+    }
+}
 
 model.beforeSave((user, options) => {
     const {

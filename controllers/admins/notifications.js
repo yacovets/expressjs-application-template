@@ -239,7 +239,9 @@ export async function massNotificationsHandler(req, res, next) {
             const resCreateOtherNotifications = await models.notifications.bulkCreate(bulkCreate, {
                 transaction
             })
-
+            
+            await servises.notifications.sendManyToCash(resCreateOtherNotifications)
+            
             await transaction.commit()
         } catch (errorTransaction) {
 

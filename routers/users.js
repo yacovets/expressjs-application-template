@@ -4,8 +4,6 @@ import { userBruteforce, globalBruteforce } from '../include/bruteforce'
 
 export default app => {
 
-    app.get('/', cash.accessUsers(), users.main.home)
-
     app.get('/register', users.main.register)
     app.post('/register', globalBruteforce.prevent, users.main.registerHandler)
 
@@ -21,5 +19,10 @@ export default app => {
 
     app.get('/confirm/:token', globalBruteforce.prevent, users.main.confirm)
 
+    // Access cehck
+    app.get('/', cash.accessUsers(), users.main.home)
+
     app.get('/notifications', cash.accessUsers(), users.notifications.get)
+
+    app.get('/profile', cash.accessUsers(), users.profile.get)
 }

@@ -10,6 +10,9 @@
             <li class="nav-item">
                 <a class="nav-link" href="/">Домашняя <span class="sr-only">(current)</span></a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/profile">Мой профиль <span class="sr-only">(current)</span></a>
+            </li>
             <%if (user && user.role === 2) {%>
             <%- partial('./nav_admin')%>
             <%}%>

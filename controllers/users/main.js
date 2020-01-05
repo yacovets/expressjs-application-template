@@ -62,6 +62,7 @@ export async function registerHandler(req, res, next) {
         const password = String(req.body.password)
         const passwordConfirm = String(req.body.passwordConfirm)
         const consent = Number(req.body.consent)
+        let ref = String(req.query.ref)
 
         // Valid login
         if (!login || login === 'undefined') {
@@ -138,7 +139,8 @@ export async function registerHandler(req, res, next) {
                     {
                         login: {
                             [Op.like]: login
-                        },
+                        }
+                    }, {
                         email: {
                             [Op.eq]: email
                         }
@@ -167,13 +169,44 @@ export async function registerHandler(req, res, next) {
             }
         }
 
+        if (ref && ref != 'undefined') {
+
+            ref = models.users.prototype.hashId(ref)
+
+            if (ref) {
+
+                let refUser = await models.users.findOne({
+                    where: {
+                        id: {
+                            [Op.eq]: ref
+                        },
+                        status: {
+                            [Op.ne]: 0
+                        }
+                    },
+                    atrributes: ['id']
+                })
+
+                if (refUser) {
+                    ref = refUser.id
+                } else {
+                    ref = null
+                }
+            } else {
+                ref = null
+            }
+        } else {
+            ref = null
+        }
+
         const newUser = await models.users.create({
             login: login,
             email: email,
             role: 1,
             status: 1,
             status_email: 2,
-            password: password
+            password: password,
+            ref: ref
         })
 
         const createTokens = await models.emailTokens.create({

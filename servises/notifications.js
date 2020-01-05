@@ -1,5 +1,3 @@
-import { Op } from 'sequelize'
-
 import * as models from '../models'
 import client from '../include/redis'
 
@@ -30,9 +28,44 @@ export function send (data) {
 
             let countCash = await client.lpush(key, JSON.stringify(dataSave))
             
+            // const countDelete = countCash - 5
+            // console.log(countDelete)
+            // await client.ltrim(key, 1, countDelete)
+
             resCreated.dataValues.countCash = countCash
 
             resolve(resCreated.dataValues)
+        } catch (error) {
+            reject(error)
+        }
+    })
+}
+
+export function sendManyToCash (data) {
+
+    return new Promise(async (resolve, reject) => {
+        
+        try {
+
+            let evalLua = `return {`
+
+            for (const notif of data) {
+
+                let dataSave = {
+                    id: notif.id,
+                    name: notif.name,
+                    level: notif.level,
+                    createdAt: notif.createdAt
+                }
+
+                evalLua += `redis.call('lpush', 'cp_notifications_user_${notif.user_id}', '${JSON.stringify(dataSave)}'),`
+            }
+
+            evalLua += `}`
+
+            let sendRedis = await client.eval(evalLua, 0)
+
+            resolve(sendRedis.length)
         } catch (error) {
             reject(error)
         }

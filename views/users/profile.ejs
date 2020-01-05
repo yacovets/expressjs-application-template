@@ -1,0 +1,17 @@
+<% layout('../layouts/main') -%>
+<%-partial('../partials/nav')%>
+<%-partial('../partials/messages')%>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <h3 class="text-center">Информация</h3>
+            <hr>
+            <p><b>Id: </b><%= data.id %></p>
+            <p><b>Логин: </b><%= data.login %></p>
+            <p><b>Email: </b><%= data.email %></p>
+            <p><b>Дата регистрации: </b><%= data.createdAt %></p>
+            <p><b>Реферальная ссылка: </b><%= data.refLink %></p>
+        </div>
+    </div>
+</div>
