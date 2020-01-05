@@ -102,8 +102,27 @@ export function accessUsers(role) {
                 return next(Error('notFound'))
             }
 
+            const keyNotifications = `notifications_user_${id}`
+
+            let notifications = await client.lrange(keyNotifications, 0, -1)
+            
+            let notificationsSave = []
+            
+            for (const notif of notifications) {
+
+               try {
+
+                let one = JSON.parse(notif)
+
+                one.createdAt = new Date(one.createdAt)
+
+                notificationsSave.push(one)
+               } catch(e) {}
+            }
+
             req.user = data
             req.user.message = message.message
+            req.user.notifications = notificationsSave
 
             return next()
 

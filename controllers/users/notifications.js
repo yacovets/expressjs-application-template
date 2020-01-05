@@ -56,23 +56,23 @@ export async function get(req, res, next) {
             }
         }
 
-        // if (update) {
+        if (update) {
 
-        //     await models.notifications.update({
-        //         status: 1
-        //     }, {
-        //         where: {
-        //             user_id: {
-        //                 [Op.eq]: req.user.id
-        //             },
-        //             status: {
-        //                 [Op.eq]: 2
-        //             }
-        //         }
-        //     })
+            await models.notifications.update({
+                status: 1
+            }, {
+                where: {
+                    user_id: {
+                        [Op.eq]: req.user.id
+                    },
+                    status: {
+                        [Op.eq]: 2
+                    }
+                }
+            })
 
-        //     // servises.cash.notificationDelAll(req.user.id)
-        // }
+            servises.notifications.deleteAll(req.user.id)
+        }
 
         return res.render('users/notifications', {
             title: 'Центр уведомлений',

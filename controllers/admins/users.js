@@ -326,12 +326,11 @@ export async function sendNotifications(req, res, next) {
             return next(Error('notFound'))
         }
 
-        await models.notifications.create({
-            user_id: id,
-            admin_id: req.user.id,
+        await servises.notifications.send({
+            user: id,
+            admin: req.user.id,
             type: 2,
             level: 1,
-            status: 2,
             name: name,
             text: text,
         })

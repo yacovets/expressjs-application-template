@@ -10,13 +10,11 @@
             <li class="nav-item">
                 <a class="nav-link" href="/">Домашняя <span class="sr-only">(current)</span></a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/notifications">Уведомления <span class="sr-only">(current)</span></a>
-            </li>
             <%if (user && user.role === 2) {%>
             <%- partial('./nav_admin')%>
             <%}%>
         </ul>
+        <a style="margin-right: 10px;" href="/notifications">Уведомления|<%= user.notifications.length %></a>
        <a href="/logout">Выйти</a>
     </div>
 </nav>

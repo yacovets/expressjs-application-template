@@ -178,7 +178,6 @@ export async function massNotificationsHandler(req, res, next) {
 
     try {
 
-
         const name = String(req.body.name).trim()
         const text = String(req.body.text).trim()
 
@@ -212,7 +211,7 @@ export async function massNotificationsHandler(req, res, next) {
                 user_id: null,
                 admin_id: req.user.id,
                 type: 3,
-                level: null,
+                level: 1,
                 status: null,
                 name: name,
                 text: text,
