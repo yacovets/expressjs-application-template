@@ -25,5 +25,5 @@ export default app => {
     adminRouter.get('/notifications', admins.notifications.get)
 
     adminRouter.get('/mass-notifications', admins.notifications.massNotifications)
-    // adminRouter.post('/mass-notifications', admins.notifications.massNotificationsHandler)
+    adminRouter.post('/mass-notifications', admins.notifications.massNotificationsHandler)
 }

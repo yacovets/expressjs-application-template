@@ -26,7 +26,8 @@ export async function get(req, res, next) {
             limit: limit,
             include: [{
                 model: models.notifications,
-                as: 'notificationsParental'
+                as: 'notificationsParental',
+                attributes: ['name', 'text']
             }],
             offset: limit * (page - 1),
         })

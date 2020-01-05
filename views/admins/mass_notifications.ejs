@@ -17,7 +17,7 @@
             <hr>
             <div class="row">
                 <div class="col-md-6 offset-md-3">
-                    <form action="/admin/users/<%= data.id %>/notifications" method="POST">
+                    <form action="" method="POST">
                         <input type="hidden" name="_csrf" value="<%=csrfToken%>">
         
                         <div class="form-group">
@@ -44,11 +44,10 @@
                 <thead class="thead-dark">
                     <tr>
                         <th scope="col">Id</th>
-                        <th scope="col">Пользователь</th>
                         <th scope="col">Админ</th>
                         <th scope="col">Название</th>
-                        <th scope="col">Тип</th>
-                        <th scope="col">Статус</th>
+                        <th scope="col">Отправленно</th>
+                        <th scope="col">Прочитано</th>
                         <th scope="col">Дата создания</th>
                     </tr>
                 </thead>
@@ -58,8 +57,8 @@
                         <th><%=element.id%></th>
                         <th><%=element.adminNotifications.login%></th>
                         <th><%=element.name%></th>
-                        <th><%=element.typeName%></th>
-                        <th><%=element.statusName%></th>
+                        <th><%=element.countSend%></th>
+                        <th><%=element.countRead%></th>
                         <th><%=element.createdAt%></th>
                     </tr>
                     <% }); %>

@@ -21,7 +21,7 @@ users.hasMany(notifications, { foreignKey: 'admin_id', as: 'adminNotifications' 
 notifications.belongsTo(users, { foreignKey: 'admin_id', as: 'adminNotifications' })
 
 notifications.hasMany(notifications, { foreignKey: 'parental_id', as: 'notificationsParentalList' })
-notifications.belongsTo(notifications, { foreignKey: 'parental', as: 'notificationsParental' })
+notifications.belongsTo(notifications, { foreignKey: 'parental_id', as: 'notificationsParental' })
 
 ;(async () => {
 

@@ -30,7 +30,7 @@ const model = sequelize.define('notifications', {
     },
     type: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: true,
     },
     level: {
         type: Sequelize.INTEGER,
