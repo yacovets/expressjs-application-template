@@ -78,11 +78,11 @@ export function accessUsers(role) {
 
             try {
                 technicalWork = JSON.parse(systems[0])
-            } catch(e) {}
+            } catch (e) { }
 
             try {
                 message = JSON.parse(systems[1])
-            } catch(e) {}
+            } catch (e) { }
 
             if (technicalWork.status > 0 && [2].indexOf(data.role) === -1) {
 
@@ -110,17 +110,17 @@ export function accessUsers(role) {
             let notifications = await client.lrange(keyNotifications, 0, -1)
 
             let notificationsSave = []
-            
+
             for (const notif of notifications) {
 
-               try {
+                try {
 
-                let one = JSON.parse(notif)
+                    let one = JSON.parse(notif)
 
-                one.createdAt = new Date(one.createdAt)
+                    one.createdAt = new Date(one.createdAt)
 
-                notificationsSave.push(one)
-               } catch(e) {}
+                    notificationsSave.push(one)
+                } catch (e) { }
             }
 
             req.user = data
@@ -135,13 +135,32 @@ export function accessUsers(role) {
     }
 }
 
-export async function deleteCashUser (id) {
+export async function deleteCashUser(id) {
 
     try {
 
         const key = `user_${id}`
 
         await client.del(key)
+
+        return true
+    } catch (error) {
+        return error
+    }
+}
+
+export async function update(id, fields) {
+
+    try {
+
+        const key = `user_${id}`
+
+        let getData = await client.get(key)
+
+        var data = JSON.parse(getData)
+        var result = Object.assign(data, fields)
+
+        await client.set(key, JSON.stringify(result), 'EX', expiredCash)
 
         return true
     } catch (error) {

@@ -1,0 +1,46 @@
+<% layout('../layouts/main') -%>
+<%-partial('../partials/nav')%>
+<%-partial('../partials/messages')%>
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Главная</a></li>
+        <li class="breadcrumb-item"><a href="/profile">Профиль</a></li>
+        <li class="breadcrumb-item active" aria-current="page"><%= title %></li>
+    </ol>
+</nav>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <form method="POST">
+                <input type="hidden" name="_csrf" value="<%=csrfToken%>">
+                <hr>
+                <h5>Изменение основных настроек</h5>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" class="form-control" name="email" value="<%= data.email %>" id="email" placeholder="Email">
+                    <p><i>Если вы измените свой email, то вам придеться заново пройти верификацию почты.</i></p>
+                </div>
+                <hr>
+                <h5>Изменение пароля</h5>
+               
+                <div class="form-group">
+                    <label for="oldPassword">Старый пароль</label>
+                    <input type="password" name="oldPassword" id="oldPassword" class="form-control" placeholder="Старый пароль">
+                </div>
+
+                <div class="form-group">
+                    <label for="newPassword">Новый пароль</label>
+                    <input type="password" name="newPassword" id="newPassword" class="form-control" placeholder="Новый пароль">
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmNewPassword">Повторите новый пароль</label>
+                    <input type="password" name="confirmNewPassword" id="confirmNewPassword" class="form-control" placeholder="Повторите новый пароль">
+                </div>
+                <button type="submit" class="btn btn-info btn-block">Сохранить изменения</button>
+            </form>
+        </div>
+    </div>
+</div>

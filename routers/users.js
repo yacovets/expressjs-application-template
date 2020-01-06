@@ -25,4 +25,7 @@ export default app => {
     app.get('/notifications', cash.accessUsers(), users.notifications.get)
 
     app.get('/profile', cash.accessUsers(), users.profile.get)
+
+    app.get('/profile/edit', cash.accessUsers(), users.profile.edit)
+    app.post('/profile/edit', cash.accessUsers(), users.profile.editHandler)
 }

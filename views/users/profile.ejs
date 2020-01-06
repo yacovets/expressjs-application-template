@@ -2,6 +2,12 @@
 <%-partial('../partials/nav')%>
 <%-partial('../partials/messages')%>
 
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Главная</a></li>
+        <li class="breadcrumb-item active" aria-current="page"><%= title %></li>
+    </ol>
+</nav>
 <div class="container">
     <div class="row">
         <div class="col-md-6 offset-md-3">
@@ -12,6 +18,8 @@
             <p><b>Email: </b><%= data.email %></p>
             <p><b>Дата регистрации: </b><%= data.createdAt %></p>
             <p><b>Реферальная ссылка: </b><%= data.refLink %></p>
+            <hr>
+            <a href="/profile/edit" class="btn btn-block btn-info">Редактировать профиль</a>
         </div>
     </div>
 </div>

@@ -185,7 +185,7 @@ export async function editHandler(req, res, next) {
         const role = Number(req.body.role)
 
         // Valid email
-        if (!email || email === 'undefined' || !validator.isEmail(email)) {
+        if (!email || email === 'undefined') {
             req.flash('type', 'warn')
             req.flash('message', `Введите email.`)
             return res.redirect(req.originalUrl)
