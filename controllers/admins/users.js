@@ -221,6 +221,12 @@ export async function editHandler(req, res, next) {
             returning: true
         })
 
+        servises.cash.update(id, {
+            email: email,
+            status_email: emailStatus,
+            role: role
+        })
+
         if (verifEmail === 1) {
 
             const createTokens = await models.emailTokens.create({

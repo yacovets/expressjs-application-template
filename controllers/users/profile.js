@@ -143,6 +143,7 @@ export async function editHandler(req, res, next) {
         })
 
         let update = {}
+        let updateCash = {}
 
         if (oldPassword && oldPassword != 'undefined') {
 
@@ -177,6 +178,10 @@ export async function editHandler(req, res, next) {
                 return res.redirect(req.originalUrl)
             }
 
+            
+            updateCash.email = email
+            updateCash.status_email = 2
+            
             update.email = email
             update.status_email = 2
         }
@@ -195,6 +200,8 @@ export async function editHandler(req, res, next) {
                 }
             }
         })
+
+        servises.cash.update(req.user.id, updateCash)
 
         if (update.status_email === 2) {
 
